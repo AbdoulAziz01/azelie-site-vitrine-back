@@ -1,0 +1,170 @@
+// Prisma schema — architecture prête pour PostgreSQL.
+// Aucune connexion n'est requise pour démarrer l'API (voir README),
+// mais dès qu'une DATABASE_URL est fournie, `npx prisma migrate dev` crée les tables.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+}
+
+enum RequestStatus {
+  NEW
+  IN_PROGRESS
+  ANSWERED
+  CLOSED
+}
+
+// Compte administrateur — prépare le futur dashboard d'administration.
+model Admin {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  fullName  String
+  role      AdminRole @default(ADMIN)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("admins")
+}
+
+model Contact {
+  id        String        @id @default(uuid())
+  fullName  String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  status    RequestStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("contacts")
+}
+
+model Quote {
+  id          String        @id @default(uuid())
+  fullName    String
+  email       String
+  phone       String?
+  company     String?
+  projectType String?
+  budget      String?
+  description String
+  status      RequestStatus @default(NEW)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("quotes")
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  isSubscribed Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("newsletter_subscribers")
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String
+  icon        String?
+  image       String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("services")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String
+  price       Decimal? @db.Decimal(10, 2)
+  images      String[] @default([])
+  category    String?
+  isActive    Boolean  @default(true)
+  stock       Int?     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Realisation {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String
+  client      String?
+  category    String?
+  images      String[] @default([])
+  isFeatured  Boolean  @default(false)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("realisations")
+}
+
+model BlogPost {
+  id          String    @id @default(uuid())
+  title       String
+  slug        String    @unique
+  excerpt     String?
+  content     String
+  coverImage  String?
+  author      String?
+  tags        String[]  @default([])
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("blog_posts")
+}
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  fullName  String
+  company   String?
+  message   String
+  rating    Int      @default(5)
+  photo     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+model Faq {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  category  String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("faqs")
+}
