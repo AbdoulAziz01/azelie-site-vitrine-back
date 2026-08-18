@@ -43,6 +43,7 @@ model Contact {
   fullName  String
   email     String
   phone     String?
+  company   String?
   subject   String?
   message   String
   status    RequestStatus @default(NEW)

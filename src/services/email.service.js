@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const env = require('../config/env');
 const logger = require('../utils/logger');
+const { buildContactNotificationEmail } = require('../utils/emailTemplate');
 
 let transporter = null;
 
@@ -39,10 +40,15 @@ async function sendMail({ to, subject, html, text }) {
 
 async function notifyAdminNewContact(contact) {
   if (!env.MAIL_TO_ADMIN) return;
+  const { html, text } = buildContactNotificationEmail(contact);
+  const subjectLine = contact.subject
+    ? `Nouvelle demande — ${contact.subject} — ${contact.fullName}`
+    : `Nouveau message de contact — ${contact.fullName}`;
   await sendMail({
     to: env.MAIL_TO_ADMIN,
-    subject: `Nouveau message de contact — ${contact.fullName}`,
-    html: `<p><strong>${contact.fullName}</strong> (${contact.email}) a envoyé un message :</p><p>${contact.message}</p>`,
+    subject: subjectLine,
+    html,
+    text,
   });
 }
 

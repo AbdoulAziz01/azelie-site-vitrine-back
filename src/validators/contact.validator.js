@@ -4,6 +4,7 @@ const createContact = [
   body('fullName').trim().notEmpty().withMessage('Le nom complet est requis.').isLength({ max: 150 }),
   body('email').trim().notEmpty().withMessage("L'email est requis.").isEmail().withMessage('Email invalide.'),
   body('phone').optional({ checkFalsy: true }).isMobilePhone('any').withMessage('Numéro de téléphone invalide.'),
+  body('company').optional({ checkFalsy: true }).trim().isLength({ max: 150 }),
   body('subject').optional({ checkFalsy: true }).isLength({ max: 200 }),
   body('message').trim().notEmpty().withMessage('Le message est requis.').isLength({ min: 10, max: 5000 }),
 ];

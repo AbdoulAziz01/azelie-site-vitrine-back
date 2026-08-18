@@ -7,8 +7,8 @@ const emailService = require('../services/email.service');
 
 // POST /api/contact — public
 const submitContact = asyncHandler(async (req, res) => {
-  const { fullName, email, phone, subject, message } = req.body;
-  const contact = await ContactModel.create({ fullName, email, phone, subject, message });
+  const { fullName, email, phone, company, subject, message } = req.body;
+  const contact = await ContactModel.create({ fullName, email, phone, company, subject, message });
   emailService.notifyAdminNewContact(contact).catch(() => {});
   return sendSuccess(res, { statusCode: 201, data: contact, message: 'Votre message a bien été envoyé.' });
 });
