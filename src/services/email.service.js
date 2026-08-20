@@ -22,7 +22,7 @@ function getTransporter() {
 
 // N'échoue jamais l'appelant si l'email ne part pas : on journalise et on continue,
 // pour ne pas bloquer un formulaire de contact/devis en cas de souci SMTP.
-async function sendMail({ to, subject, html, text }) {
+async function sendMail({ to, subject, html, text, replyTo }) {
   const client = getTransporter();
   if (!client) {
     logger.info(`[EMAIL SIMULÉ] to=${to} subject="${subject}"`);
@@ -30,7 +30,7 @@ async function sendMail({ to, subject, html, text }) {
   }
 
   try {
-    const info = await client.sendMail({ from: env.MAIL_FROM, to, subject, html, text });
+    const info = await client.sendMail({ from: env.MAIL_FROM, to, subject, html, text, replyTo });
     return info;
   } catch (error) {
     logger.error(`Échec d'envoi d'email vers ${to}: ${error.message}`);
@@ -49,6 +49,7 @@ async function notifyAdminNewContact(contact) {
     subject: subjectLine,
     html,
     text,
+    replyTo: contact.email,
   });
 }
 
@@ -58,6 +59,7 @@ async function notifyAdminNewQuote(quote) {
     to: env.MAIL_TO_ADMIN,
     subject: `Nouvelle demande de devis — ${quote.fullName}`,
     html: `<p><strong>${quote.fullName}</strong> (${quote.email}) demande un devis :</p><p>${quote.description}</p>`,
+    replyTo: quote.email,
   });
 }
 
